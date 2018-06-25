@@ -132,9 +132,10 @@ maximum productivity.
 
 ### Piping events
 
-`pipeTo` pipes events to another `Emitter`.
+[`pipeTo`][Emitter_pipeTo] pipes events to another `Emitter`.
 
-`pipeToValue` pipes events to the given `RxValue`. This could be very helpful in binding events to observable values.
+[`pipeToValue`][Emitter_pipeToValue] pipes events to the given `RxValue`. This could be very helpful in binding events 
+to observable values.
 
 ### Emitting events
 
@@ -233,3 +234,5 @@ condition. This is very useful in writing UI in Dart DSL (as in Flutter and Nuts
 [Emitter_on]: https://pub.dartlang.org/documentation/observable_ish/latest/event_event/Emitter/on.html
 [Emitter_listen]: https://pub.dartlang.org/documentation/observable_ish/latest/event_event/Emitter/listen.html
 [Emitter_asStream]: https://pub.dartlang.org/documentation/observable_ish/latest/event_event/Emitter/asStream.html
+[Emitter_pipeTo]: https://pub.dartlang.org/documentation/observable_ish/latest/event_event/Emitter/pipeTo.html
+[Emitter_pipeToValue]: https://pub.dartlang.org/documentation/observable_ish/latest/event_event/Emitter/pipeToValue.html
