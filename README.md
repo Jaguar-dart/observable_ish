@@ -127,8 +127,8 @@ main() {
 
 `RxList` implements Dart's `List`. 
 
-Besides `List`'s methods, `RxList` provides convenient methods like `addIf` and `addAllIf` to add elements based on a condition.
-This is very useful in writing UI in Dart DSL (as in Flutter and Nuts).
+Besides `List`'s methods, `RxList` provides convenient methods like [`addIf`][RxList_addIf] and [`addAllIf`][RxList_addAllIf] 
+to add elements based on a condition. This is very useful in writing UI in Dart DSL (as in Flutter and Nuts).
 
 ```dart
 main() {
@@ -143,7 +143,7 @@ Use `assign` and `assignAll` methods to replace existing contents of the list wi
 
 ### Listening for changes
 
-`onChange` exposes a `Stream` of record of change of the `List`.
+[`onChange`][RxList_onChange] exposes a `Stream` of record of change of the `List`.
 
 ## Reactive Sets
 
@@ -153,8 +153,8 @@ Use `assign` and `assignAll` methods to replace existing contents of the list wi
 
 `RxSet` implements Dart's `Set`. 
 
-Besides `Set`'s methods, `RxSet` provides convenient methods like `addIf` and `addAllIf` to add elements based on a condition.
-This is very useful in writing UI in Dart DSL (as in Flutter and Nuts).
+Besides `Set`'s methods, `RxSet` provides convenient methods like [`addIf`][RxSet_addIf] and [`addAllIf`][RxSet_addAllIf] 
+to add elements based on a condition. This is very useful in writing UI in Dart DSL (as in Flutter and Nuts).
 
 ```dart
 main() {
@@ -167,7 +167,7 @@ main() {
 
 ### Listening for changes
 
-`onChange` exposes a `Stream` of record of change of the `Set`.
+[`onChange`][RxSet_onChange] exposes a `Stream` of record of change of the `Set`.
 
 ### Binding
 
@@ -203,3 +203,9 @@ condition. This is very useful in writing UI in Dart DSL (as in Flutter and Nuts
 [RxValue_listen]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxValue/listen.html
 [RxValue_bindStream]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxValue/bindStream.html
 [RxValue_bind]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxValue/bind.html
+[RxList_addIf]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxList/addIf.html
+[RxList_addAllIf]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxList/addAllIf.html
+[RxList_onChange]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxList/onChange.html
+[RxSet_addIf]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxSet/addIf.html
+[RxSet_addAllIf]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxSet/addAllIf.html
+[RxSet_onChange]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxSet/onChange.html
