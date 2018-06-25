@@ -1,0 +1,58 @@
+import 'dart:async';
+import 'value.dart';
+import 'package:observable_ish/observable_ish.dart';
+
+class ProxyValue<T> implements RxValue<T> {
+  ValueGetter<T> getterProxy = _defGetter;
+  final _change = new StreamController<Change<T>>();
+
+  int _curBatch = 0;
+  ProxyValue({this.getterProxy: _defGetter}) {
+    _onChange = _change.stream.asBroadcastStream();
+  }
+
+  static T _defGetter<T>() => null;
+
+  T get value => getterProxy();
+  set value(T val) {
+    T old = value;
+    if (old == val) return;
+    _change.add(Change<T>(val, old, _curBatch));
+  }
+
+  void setCast(dynamic /* T */ val) => value = val;
+
+  Stream<Change<T>> _onChange;
+
+  Stream<Change<T>> get onChange {
+    _curBatch++;
+    final ret = StreamController<Change<T>>();
+    ret.add(Change<T>(value, null, _curBatch));
+    ret.addStream(_onChange.skipWhile((v) => v.batch < _curBatch));
+    return ret.stream.asBroadcastStream();
+  }
+
+  Stream<T> get values => onChange.map((c) => c.neu);
+
+  void bind(RxValue<T> reactive) {
+    value = reactive.value;
+    reactive.values.listen((v) => value = v);
+  }
+
+  void bindStream(Stream<T> stream) => stream.listen((v) => value = v);
+
+  void bindOrSet(/* T | Stream<T> | Reactive<T> */ other) {
+    if (other is RxValue<T>) {
+      bind(other);
+    } else if (other is Stream<T>) {
+      bindStream(other.cast<T>());
+    } else {
+      value = other;
+    }
+  }
+
+  StreamSubscription<T> listen(ValueCallback<T> callback) =>
+      values.listen(callback);
+
+  Stream<R> map<R>(R mapper(T data)) => values.map(mapper);
+}

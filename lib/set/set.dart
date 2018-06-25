@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'package:collection/collection.dart';
-import 'observable_ish.dart';
+import 'package:observable_ish/observable_ish.dart';
 
-class IfSet<E> extends DelegatingSet<E> implements Set<E> {
-  IfSet() : super(new Set<E>());
+class RxSet<E> extends DelegatingSet<E> implements Set<E> {
+  RxSet() : super(new Set<E>());
 
-  IfSet.from(Iterable elements) : super(Set<E>.from(elements));
+  RxSet.from(Iterable elements) : super(Set<E>.from(elements));
 
-  IfSet.union(Iterable<E> elements, [E element])
+  RxSet.union(Iterable<E> elements, [E element])
       : super(Set<E>.from(elements ?? <E>[])) {
     if (element != null) _add(element);
   }
 
-  IfSet.of(Iterable<E> elements) : super(Set<E>.of(elements));
+  RxSet.of(Iterable<E> elements) : super(Set<E>.of(elements));
 
   void addIf(/* bool | Condition */ condition, E element) {
     if (condition is Condition) condition = condition();
@@ -83,7 +83,7 @@ class IfSet<E> extends DelegatingSet<E> implements Set<E> {
     });
   }
 
-  void bindBoolRx(E element, Reactive<bool> other) {
+  void bindBoolValue(E element, RxValue<bool> other) {
     if (other.value) {
       add(element);
     } else {
@@ -97,7 +97,7 @@ class IfSet<E> extends DelegatingSet<E> implements Set<E> {
     });
   }
 
-  void bindOneOf(Iterable<E> options, Stream<int> other, [int initial]) {
+  void bindOneByIndexStream(Iterable<E> options, Stream<int> other, [int initial]) {
     {
       int value = initial;
       for (int i = 0; i < options.length; i++) {
@@ -117,7 +117,7 @@ class IfSet<E> extends DelegatingSet<E> implements Set<E> {
     });
   }
 
-  void bindOneOfRx(Iterable<E> options, Reactive<int> other) {
+  void bindOneByIndex(Iterable<E> options, RxValue<int> other) {
     {
       int value = other.value;
       for (int i = 0; i < options.length; i++) {
@@ -138,7 +138,7 @@ class IfSet<E> extends DelegatingSet<E> implements Set<E> {
   }
 }
 
-class Classes extends IfSet<String> {
+class Classes extends RxSet<String> {
   Classes() : super();
 
   Classes.from(Iterable elements) : super.from(elements);
