@@ -203,9 +203,9 @@ condition. This is very useful in writing UI in Dart DSL (as in Flutter and Nuts
 [RxValue_listen]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxValue/listen.html
 [RxValue_bindStream]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxValue/bindStream.html
 [RxValue_bind]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxValue/bind.html
-[RxList_addIf]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxList/addIf.html
-[RxList_addAllIf]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxList/addAllIf.html
-[RxList_onChange]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxList/onChange.html
-[RxSet_addIf]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxSet/addIf.html
-[RxSet_addAllIf]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxSet/addAllIf.html
-[RxSet_onChange]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxSet/onChange.html
+[RxList_addIf]: https://pub.dartlang.org/documentation/observable_ish/latest/list_list/RxList/addIf.html
+[RxList_addAllIf]: https://pub.dartlang.org/documentation/observable_ish/latest/list_list/RxList/addAllIf.html
+[RxList_onChange]: https://pub.dartlang.org/documentation/observable_ish/latest/list_list/RxList/onChange.html
+[RxSet_addIf]: https://pub.dartlang.org/documentation/observable_ish/latest/set_set/RxSet/addIf.html
+[RxSet_addAllIf]: https://pub.dartlang.org/documentation/observable_ish/latest/set_set/RxSet/addAllIf.html
+[RxSet_onChange]: https://pub.dartlang.org/documentation/observable_ish/latest/set_set/RxSet/onChange.html
