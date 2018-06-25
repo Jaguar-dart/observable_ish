@@ -3,17 +3,15 @@ import 'value.dart';
 import 'package:observable_ish/observable_ish.dart';
 
 class ProxyValue<T> implements RxValue<T> {
-  ValueGetter<T> getterProxy = _defGetter;
+  ValueGetter<T> getterProxy;
   final _change = new StreamController<Change<T>>();
 
   int _curBatch = 0;
-  ProxyValue({this.getterProxy: _defGetter}) {
+  ProxyValue({this.getterProxy}) {
     _onChange = _change.stream.asBroadcastStream();
   }
 
-  static T _defGetter<T>() => null;
-
-  T get value => getterProxy();
+  T get value => getterProxy != null ? getterProxy() : null;
   set value(T val) {
     T old = value;
     if (old == val) return;
@@ -28,7 +26,11 @@ class ProxyValue<T> implements RxValue<T> {
     _curBatch++;
     final ret = StreamController<Change<T>>();
     ret.add(Change<T>(value, null, _curBatch));
-    ret.addStream(_onChange.skipWhile((v) => v.batch < _curBatch));
+    if (getterProxy != null) {
+      ret.addStream(_onChange.skipWhile((v) => v.batch < _curBatch));
+    } else {
+      ret.addStream(_onChange);
+    }
     return ret.stream.asBroadcastStream();
   }
 
