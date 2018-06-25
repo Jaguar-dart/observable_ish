@@ -192,12 +192,12 @@ condition. This is very useful in writing UI in Dart DSL (as in Flutter and Nuts
 
 `onChange` exposes a `Stream` of record of change of the `Map`.
 
-[RxValue]: 
-[RxList]: 
-[RxSet]: 
-[RxMap]:
-[Emitter]:
-[RxValue_value]: 
-[RxValue_onChange]: 
-[RxValue_values]: 
-[RxValue_listen]: 
+[RxValue]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxValue-class.html
+[RxList]: https://pub.dartlang.org/documentation/observable_ish/latest/list_list/RxList-class.html
+[RxSet]: https://pub.dartlang.org/documentation/observable_ish/latest/set_set/RxSet-class.html
+[RxMap]: https://pub.dartlang.org/documentation/observable_ish/latest/map_map/RxMap-class.html
+[Emitter]: https://pub.dartlang.org/documentation/observable_ish/latest/event_event/Emitter-class.html
+[RxValue_value]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxValue/value.html
+[RxValue_onChange]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxValue/onChange.html
+[RxValue_values]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxValue/values.html
+[RxValue_listen]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxValue/listen.html
