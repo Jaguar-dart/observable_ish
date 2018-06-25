@@ -16,7 +16,7 @@ Observable-ish provides a light-weight non-intrusive reactive framework to build
 asynchronous `Stream`s to emit and listen to changes.
 
 Various observable types like [`RxValue`][RxValue], [`RxList`][RxList], [`RxSet`][RxSet] and [`RxMap`][RxMap] can be 
-used to update UI automatically on changes. Events can be passed up the widget tree using [`Emitter`][Emitter]
+used to update UI automatically on changes. Events can be passed up the widget tree using event [`Emitter`][Emitter].
 
 ## Reactive values
 
@@ -57,10 +57,10 @@ main() {
 
 ### Binding to a value
 
-Binding an `RxValue` to a `Stream` (using method `bindStream`) or another `RxValue` (using method `bind`) changes its
-value when the source `Stream` emits or `RxValue` changes. This is very useful in scenarios where one would like to change
-a model's value or widget's property when control changes. For example, change a text field's value when a checkbox is 
-toggled.
+Binding an `RxValue` to a `Stream` (using method [`bindStream`][RxValue_bindStream]) or another `RxValue` 
+(using method [`bind`][RxValue_bind]) changes its value when the source `Stream` emits or `RxValue` changes. This is very 
+useful in scenarios where one would like to change a model's value or widget's property when control changes. For example, 
+change a text field's value when a checkbox is toggled.
 
 ```dart
   textBox.value.bindStream(checkBox.checked.map((bool v) => v?'Female': 'Male'));
@@ -201,3 +201,5 @@ condition. This is very useful in writing UI in Dart DSL (as in Flutter and Nuts
 [RxValue_onChange]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxValue/onChange.html
 [RxValue_values]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxValue/values.html
 [RxValue_listen]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxValue/listen.html
+[RxValue_bindStream]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxValue/bindStream.html
+[RxValue_bind]: https://pub.dartlang.org/documentation/observable_ish/latest/value_value/RxValue/bind.html
