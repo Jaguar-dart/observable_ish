@@ -23,6 +23,8 @@ abstract class Emitter<T> {
   void emitStream(Stream<T> stream);
   /// Emits values of [emitter]
   void emit(Emitter<T> emitter);
+  /// Emits values of [value]
+  void emitRxValue(RxValue<T> value);
 }
 
 class StreamBackedEmitter<T> implements Emitter<T> {
@@ -65,4 +67,8 @@ class StreamBackedEmitter<T> implements Emitter<T> {
   void pipeTo(Emitter<T> emitter) => emitter.emit(this);
 
   void pipeToValue(RxValue<T> other) => other.bindStream(_stream);
+
+  void emitRxValue(RxValue<T> value) {
+    _streamer.addStream(value.values);
+  }
 }

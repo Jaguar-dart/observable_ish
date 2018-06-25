@@ -119,6 +119,27 @@ main() {
 }
 ```
 
+## Event emitter
+
+`Emitter`s provide a simple interface to emit and listen to events. It is designed to inter-operate with `RxValue` to provide
+maximum productivity.
+
+### Listening to a event
+
+1. [on: Execute callback on event][Emitter_on]
+2. [listen: Similar to Stream][Emitter_listen]
+3. [asStream: Obtain event as Stream][Emitter_asStream]
+
+### Piping events
+
+`pipeTo` pipes events to another `Emitter`.
+
+`pipeToValue` pipes events to the given `RxValue`. This could be very helpful in binding events to observable values.
+
+### Emitting events
+
+`emit`, `emitOne`, `emitAll`, `emitStream` and `emitRxValue` provides various ways to emit events using the `Emitter`
+
 ## Reactive Lists
 
 `RxList` notifies changes (addition, removal, clear, setting) of its elements.
@@ -209,3 +230,6 @@ condition. This is very useful in writing UI in Dart DSL (as in Flutter and Nuts
 [RxSet_addIf]: https://pub.dartlang.org/documentation/observable_ish/latest/set_set/RxSet/addIf.html
 [RxSet_addAllIf]: https://pub.dartlang.org/documentation/observable_ish/latest/set_set/RxSet/addAllIf.html
 [RxSet_onChange]: https://pub.dartlang.org/documentation/observable_ish/latest/set_set/RxSet/onChange.html
+[Emitter_on]: https://pub.dartlang.org/documentation/observable_ish/latest/event_event/Emitter/on.html
+[Emitter_listen]: https://pub.dartlang.org/documentation/observable_ish/latest/event_event/Emitter/listen.html
+[Emitter_asStream]: https://pub.dartlang.org/documentation/observable_ish/latest/event_event/Emitter/asStream.html
