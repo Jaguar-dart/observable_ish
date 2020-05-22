@@ -55,6 +55,12 @@ class RxList<E> extends DelegatingList<E> implements List<E> {
     _changes.add(ListChangeNotification<E>.insert(element, length - 1));
   }
 
+  void addAll(Iterable<E> elements) {
+    super.addAll(elements);
+    elements.forEach((element) =>
+        _changes.add(ListChangeNotification<E>.insert(element, length - 1)));
+  }
+
   /// Adds only if [element] is not null.
   void addNonNull(E element) {
     if (element != null) add(element);
