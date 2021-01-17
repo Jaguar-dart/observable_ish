@@ -4,7 +4,7 @@ import 'package:observable_ish/observable_ish.dart';
 
 class ProxyValue<T> implements RxValue<T> {
   ValueGetter<T> getterProxy;
-  final _change = new StreamController<Change<T>>();
+  final _change = StreamController<Change<T>>();
 
   int _curBatch = 0;
   ProxyValue({this.getterProxy}) {

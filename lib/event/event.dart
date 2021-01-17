@@ -59,7 +59,7 @@ class StreamBackedEmitter<T> implements Emitter<T> {
     if (callback is Callback)
       return _stream.listen((_) => callback());
     else if (callback is ValueCallback<T>) return _stream.listen(callback);
-    throw new Exception('Invalid callback!');
+    throw Exception('Invalid callback!');
   }
 
   void emit(Emitter<T> emitter) => emitter.listen(emitOne);

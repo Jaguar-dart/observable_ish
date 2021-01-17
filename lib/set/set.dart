@@ -3,7 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:observable_ish/observable_ish.dart';
 
 class RxSet<E> extends DelegatingSet<E> implements Set<E> {
-  RxSet() : super(new Set<E>());
+  RxSet() : super(Set<E>());
 
   RxSet.from(Iterable elements) : super(Set<E>.from(elements));
 

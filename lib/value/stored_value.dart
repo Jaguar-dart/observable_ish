@@ -5,7 +5,7 @@ import 'package:observable_ish/observable_ish.dart';
 class StoredValue<T> implements RxValue<T> {
   T _value;
   T get value => _value;
-  final _change = new StreamController<Change<T>>();
+  final _change = StreamController<Change<T>>();
   set value(T val) {
     if (_value == val) return;
     T old = _value;

@@ -146,23 +146,23 @@ class ListChangeNotification<E> {
   final DateTime time;
 
   ListChangeNotification(this.element, this.op, this.pos, {DateTime time})
-      : time = time ?? new DateTime.now();
+      : time = time ?? DateTime.now();
 
   ListChangeNotification.insert(this.element, this.pos, {DateTime time})
       : op = ListChangeOp.add,
-        time = time ?? new DateTime.now();
+        time = time ?? DateTime.now();
 
   ListChangeNotification.set(this.element, this.pos, {DateTime time})
       : op = ListChangeOp.set,
-        time = time ?? new DateTime.now();
+        time = time ?? DateTime.now();
 
   ListChangeNotification.remove(this.element, this.pos, {DateTime time})
       : op = ListChangeOp.remove,
-        time = time ?? new DateTime.now();
+        time = time ?? DateTime.now();
 
   ListChangeNotification.clear({DateTime time})
       : op = ListChangeOp.clear,
         pos = null,
         element = null,
-        time = time ?? new DateTime.now();
+        time = time ?? DateTime.now();
 }
