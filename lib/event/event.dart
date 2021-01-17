@@ -25,6 +25,8 @@ abstract class Emitter<T> {
   void emit(Emitter<T> emitter);
   /// Emits values of [value]
   void emitRxValue(RxValue<T> value);
+
+  Future<void> dispose();
 }
 
 class StreamBackedEmitter<T> implements Emitter<T> {
@@ -44,13 +46,13 @@ class StreamBackedEmitter<T> implements Emitter<T> {
 
   void emitStream(Stream<T> stream) => _streamer.addStream(stream);
 
-  void on(/* Callback | ValueCallback */ callback) {
+  StreamSubscription<T> on(/* Callback | ValueCallback */ callback) {
     if (callback is Callback)
-      _stream.listen((_) => callback());
+      return _stream.listen((_) => callback());
     else if (callback is ValueCallback<T>)
-      _stream.listen(callback);
+      return _stream.listen(callback);
     else
-      throw new Exception('Invalid callback ${callback}!');
+      throw Exception('Invalid callback ${callback}!');
   }
 
   StreamSubscription<T> listen(/* Callback | ValueCallback */ callback) {
@@ -71,4 +73,6 @@ class StreamBackedEmitter<T> implements Emitter<T> {
   void emitRxValue(RxValue<T> value) {
     _streamer.addStream(value.values);
   }
+
+  Future<void> dispose() => _streamer.close();
 }
