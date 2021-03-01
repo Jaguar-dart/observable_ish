@@ -3,29 +3,29 @@ import 'value.dart';
 import 'package:observable_ish/observable_ish.dart';
 
 class ProxyValue<T> implements RxValue<T> {
-  ValueGetter<T> getterProxy;
-  final _change = StreamController<Change<T>>();
+  ValueGetter<T>? getterProxy;
+  final StreamController<Change<T?>> _change = StreamController<Change<T>>();
 
   int _curBatch = 0;
-  ProxyValue({this.getterProxy}) {
+  ProxyValue({required this.getterProxy}) {
     _onChange = _change.stream.asBroadcastStream();
   }
 
-  T get value => getterProxy != null ? getterProxy() : null;
-  set value(T val) {
-    T old = value;
+  T? get value => getterProxy == null? getterProxy!(): null;
+  set value(T? val) {
+    T? old = value;
     if (old == val) return;
-    _change.add(Change<T>(val, old, _curBatch));
+    _change.add(Change<T?>(val, old, _curBatch));
   }
 
   void setCast(dynamic /* T */ val) => value = val;
 
-  Stream<Change<T>> _onChange;
+  late Stream<Change<T?>> _onChange;
 
-  Stream<Change<T>> get onChange {
+  Stream<Change<T?>> get onChange {
     _curBatch++;
-    final ret = StreamController<Change<T>>();
-    ret.add(Change<T>(value, null, _curBatch));
+    final StreamController<Change<T?>> ret = StreamController<Change<T>>();
+    ret.add(Change<T?>(value, null, _curBatch));
     if (getterProxy != null) {
       ret.addStream(_onChange.skipWhile((v) => v.batch < _curBatch));
     } else {
@@ -34,14 +34,14 @@ class ProxyValue<T> implements RxValue<T> {
     return ret.stream.asBroadcastStream();
   }
 
-  Stream<T> get values => onChange.map((c) => c.neu);
+  Stream<T> get values => onChange.map((c) => c.neu!);
 
   void bind(RxValue<T> reactive) {
     value = reactive.value;
     reactive.values.listen((v) => value = v);
   }
 
-  void bindStream(Stream<T> stream) => stream.listen((v) => value = v);
+  void bindStream(Stream<T>? stream) => stream!.listen((v) => value = v);
 
   void bindOrSet(/* T | Stream<T> | Reactive<T> */ other) {
     if (other is RxValue<T>) {
@@ -53,8 +53,8 @@ class ProxyValue<T> implements RxValue<T> {
     }
   }
 
-  StreamSubscription<T> listen(ValueCallback<T> callback) =>
+  StreamSubscription<T?> listen(ValueCallback<T?> callback) =>
       values.listen(callback);
 
-  Stream<R> map<R>(R mapper(T data)) => values.map(mapper);
+  Stream<R> map<R>(R mapper(T? data)) => values.map(mapper);
 }

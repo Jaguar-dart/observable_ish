@@ -5,7 +5,10 @@ import 'package:observable_ish/observable_ish.dart';
 /// Observable list
 class RxList<E> extends DelegatingList<E> implements List<E> {
   /// Create a list. Behaves similar to `List<int>([int length])`
-  RxList([int length]) : super(length != null ? List<E>(length) : List<E>()) {
+  RxList([int? length])
+      : super(length != null
+            ? (<E>[]..length = length)
+            : List<E>.empty(growable: true)) {
     _onChange = _changes.stream.asBroadcastStream();
   }
 
@@ -19,8 +22,7 @@ class RxList<E> extends DelegatingList<E> implements List<E> {
     _onChange = _changes.stream.asBroadcastStream();
   }
 
-  RxList.union(Iterable<E> elements, [E element])
-      : super(elements?.toList() ?? <E>[]) {
+  RxList.union(Iterable<E> elements, [E? element]) : super(elements.toList()) {
     if (element != null) add(element);
     _onChange = _changes.stream.asBroadcastStream();
   }
@@ -43,15 +45,15 @@ class RxList<E> extends DelegatingList<E> implements List<E> {
     if (condition is bool && condition) addAll(elements);
   }
 
-  operator []=(int index, E value) {
-    super[index] = value;
+  operator []=(int index, E? value) {
+    super[index] = value!;
     _changes.add(ListChangeNotification<E>.set(value, index));
   }
 
   void _add(E element) => super.add(element);
 
-  void add(E element) {
-    super.add(element);
+  void add(E? element) {
+    super.add(element!);
     _changes.add(ListChangeNotification<E>.insert(element, length - 1));
   }
 
@@ -66,13 +68,13 @@ class RxList<E> extends DelegatingList<E> implements List<E> {
     if (element != null) add(element);
   }
 
-  void insert(int index, E element) {
-    super.insert(index, element);
+  void insert(int index, E? element) {
+    super.insert(index, element!);
     _changes.add(ListChangeNotification<E>.insert(element, index));
   }
 
-  bool remove(Object element) {
-    int pos = indexOf(element);
+  bool remove(Object? element) {
+    int pos = indexOf(element as E);
     bool hasRemoved = super.remove(element);
     if (hasRemoved) {
       _changes.add(ListChangeNotification<E>.remove(element, pos));
@@ -105,7 +107,7 @@ class RxList<E> extends DelegatingList<E> implements List<E> {
     return ret.stream.asBroadcastStream();
   }
 
-  Stream<ListChangeNotification<E>> _onChange;
+  late Stream<ListChangeNotification<E>> _onChange;
 
   final _changes = StreamController<ListChangeNotification<E>>();
 }
@@ -116,15 +118,15 @@ typedef E ChildrenListComposer<S, E>(S value);
 class BoundList<S, E> extends RxList<E> {
   final RxList<S> binding;
 
-  final ChildrenListComposer<S, E> composer;
+  final ChildrenListComposer<S?, E> composer;
 
   BoundList(this.binding, this.composer) {
-    for (S v in binding) _add(composer(v));
+    for (S? v in binding) _add(composer(v));
     binding.onChange.listen((ListChangeNotification<S> n) {
       if (n.op == ListChangeOp.add) {
-        insert(n.pos, composer(n.element));
+        insert(n.pos!, composer(n.element));
       } else if (n.op == ListChangeOp.remove) {
-        removeAt(n.pos);
+        removeAt(n.pos!);
       } else if (n.op == ListChangeOp.clear) {
         clear();
       }
@@ -137,30 +139,30 @@ enum ListChangeOp { add, remove, clear, set }
 
 /// A record of change in a [RxList]
 class ListChangeNotification<E> {
-  final E element;
+  final E? element;
 
   final ListChangeOp op;
 
-  final int pos;
+  final int? pos;
 
   final DateTime time;
 
-  ListChangeNotification(this.element, this.op, this.pos, {DateTime time})
+  ListChangeNotification(this.element, this.op, this.pos, {DateTime? time})
       : time = time ?? DateTime.now();
 
-  ListChangeNotification.insert(this.element, this.pos, {DateTime time})
+  ListChangeNotification.insert(this.element, this.pos, {DateTime? time})
       : op = ListChangeOp.add,
         time = time ?? DateTime.now();
 
-  ListChangeNotification.set(this.element, this.pos, {DateTime time})
+  ListChangeNotification.set(this.element, this.pos, {DateTime? time})
       : op = ListChangeOp.set,
         time = time ?? DateTime.now();
 
-  ListChangeNotification.remove(this.element, this.pos, {DateTime time})
+  ListChangeNotification.remove(this.element, this.pos, {DateTime? time})
       : op = ListChangeOp.remove,
         time = time ?? DateTime.now();
 
-  ListChangeNotification.clear({DateTime time})
+  ListChangeNotification.clear({DateTime? time})
       : op = ListChangeOp.clear,
         pos = null,
         element = null,

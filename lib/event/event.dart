@@ -10,7 +10,7 @@ abstract class Emitter<T> {
   /// to control the listening.
   StreamSubscription<T> listen(/* Callback | ValueCallback */ callback);
   /// Returns events as [Stream].
-  Stream<T> get asStream;
+  Stream<T>? get asStream;
   /// Pipes events to [other]
   void pipeTo(Emitter<T> other);
   /// Pipes events to [other]
@@ -32,7 +32,7 @@ abstract class Emitter<T> {
 class StreamBackedEmitter<T> implements Emitter<T> {
   final _streamer = StreamController<T>();
 
-  Stream<T> _stream;
+  Stream<T>? _stream;
 
   StreamBackedEmitter() {
     _stream = _streamer.stream.asBroadcastStream();
@@ -48,23 +48,23 @@ class StreamBackedEmitter<T> implements Emitter<T> {
 
   StreamSubscription<T> on(/* Callback | ValueCallback */ callback) {
     if (callback is Callback)
-      return _stream.listen((_) => callback());
+      return _stream!.listen((_) => callback());
     else if (callback is ValueCallback<T>)
-      return _stream.listen(callback);
+      return _stream!.listen(callback);
     else
       throw Exception('Invalid callback ${callback}!');
   }
 
   StreamSubscription<T> listen(/* Callback | ValueCallback */ callback) {
     if (callback is Callback)
-      return _stream.listen((_) => callback());
-    else if (callback is ValueCallback<T>) return _stream.listen(callback);
+      return _stream!.listen((_) => callback());
+    else if (callback is ValueCallback<T>) return _stream!.listen(callback);
     throw Exception('Invalid callback!');
   }
 
   void emit(Emitter<T> emitter) => emitter.listen(emitOne);
 
-  Stream<T> get asStream => _stream;
+  Stream<T>? get asStream => _stream;
 
   void pipeTo(Emitter<T> emitter) => emitter.emit(this);
 
