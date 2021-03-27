@@ -1,4 +1,3 @@
-import 'package:observable_ish/observable_ish.dart';
 import 'package:test/test.dart';
 
 void main() {

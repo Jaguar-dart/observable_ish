@@ -4,18 +4,27 @@ import 'package:observable_ish/observable_ish.dart';
 
 class ProxyValue<T> implements RxValue<T> {
   ValueGetter<T> getterProxy;
-  final _change = StreamController<Change<T>>();
+
+  final StreamController<Change<T>> _controller;
 
   int _curBatch = 0;
-  ProxyValue({this.getterProxy}) {
-    _onChange = _change.stream.asBroadcastStream();
+
+  ProxyValue._(this._controller, this._onChange, this.getterProxy);
+
+  factory ProxyValue(ValueGetter<T> getterProxy) {
+    final controller = StreamController<Change<T>>();
+    final onChange = controller.stream.asBroadcastStream();
+
+    return ProxyValue._(controller, onChange, getterProxy);
   }
 
-  T get value => getterProxy != null ? getterProxy() : null;
+  T get value => getterProxy();
   set value(T val) {
     T old = value;
-    if (old == val) return;
-    _change.add(Change<T>(val, old, _curBatch));
+    if (old == val) {
+      return;
+    }
+    _controller.add(Change<T>(val, old, _curBatch));
   }
 
   void setCast(dynamic /* T */ val) => value = val;
@@ -25,12 +34,8 @@ class ProxyValue<T> implements RxValue<T> {
   Stream<Change<T>> get onChange {
     _curBatch++;
     final ret = StreamController<Change<T>>();
-    ret.add(Change<T>(value, null, _curBatch));
-    if (getterProxy != null) {
-      ret.addStream(_onChange.skipWhile((v) => v.batch < _curBatch));
-    } else {
-      ret.addStream(_onChange);
-    }
+    ret.add(Change<T>(value, value, _curBatch));
+    ret.addStream(_onChange.skipWhile((v) => v.batch < _curBatch));
     return ret.stream.asBroadcastStream();
   }
 

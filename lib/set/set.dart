@@ -3,16 +3,19 @@ import 'package:collection/collection.dart';
 import 'package:observable_ish/observable_ish.dart';
 
 class RxSet<E> extends DelegatingSet<E> implements Set<E> {
+  final _changes = StreamController<SetChangeNotification<E>>();
+  Stream<SetChangeNotification<E>>? _stream;
+
   RxSet() : super(Set<E>());
 
   RxSet.from(Iterable elements) : super(Set<E>.from(elements));
 
-  RxSet.union(Iterable<E> elements, [E element])
-      : super(Set<E>.from(elements ?? <E>[])) {
+  RxSet.of(Iterable<E> elements) : super(Set<E>.of(elements));
+
+  RxSet.union(Iterable<E> elements, [E? element])
+      : super(Set<E>.from(elements)) {
     if (element != null) _add(element);
   }
-
-  RxSet.of(Iterable<E> elements) : super(Set<E>.of(elements));
 
   void addIf(/* bool | Condition */ condition, E element) {
     if (condition is Condition) condition = condition();
@@ -39,10 +42,10 @@ class RxSet<E> extends DelegatingSet<E> implements Set<E> {
     return add(element);
   }
 
-  bool remove(Object element) {
+  bool remove(Object? element) {
     bool hasRemoved = super.remove(element);
     if (hasRemoved) {
-      _changes.add(SetChangeNotification<E>.remove(element));
+      _changes.add(SetChangeNotification<E>.remove(element as E));
     }
     return hasRemoved;
   }
@@ -55,18 +58,14 @@ class RxSet<E> extends DelegatingSet<E> implements Set<E> {
     }
   }
 
-  Stream<SetChangeNotification<E>> __onChange;
-
   Stream<SetChangeNotification<E>> get _onChange =>
-      __onChange ??= _changes.stream.asBroadcastStream();
+      _stream ??= _changes.stream.asBroadcastStream();
 
   Stream<SetChangeNotification<E>> get onChange {
     final ret = StreamController<SetChangeNotification<E>>();
     ret.addStream(_onChange);
     return ret.stream.asBroadcastStream();
   }
-
-  final _changes = StreamController<SetChangeNotification<E>>();
 
   void bindBool(E element, Stream<bool> stream, [bool initial = false]) {
     if (initial) {
@@ -84,22 +83,23 @@ class RxSet<E> extends DelegatingSet<E> implements Set<E> {
   }
 
   void bindBoolValue(E element, RxValue<bool> other) {
-    if (other.value) {
+    if (other.value == true) {
       add(element);
     } else {
       remove(element);
     }
-    other.values.listen((bool value) {
-      if (value)
+    other.values.listen((bool? value) {
+      if (value == true)
         add(element);
       else
         remove(element);
     });
   }
 
-  void bindOneByIndexStream(Iterable<E> options, Stream<int> other, [int initial]) {
+  void bindOneByIndexStream(Iterable<E> options, Stream<int> other,
+      [int? initial]) {
     {
-      int value = initial;
+      int? value = initial;
       for (int i = 0; i < options.length; i++) {
         if (value == i)
           add(options.elementAt(i));
@@ -119,20 +119,22 @@ class RxSet<E> extends DelegatingSet<E> implements Set<E> {
 
   void bindOneByIndex(Iterable<E> options, RxValue<int> other) {
     {
-      int value = other.value;
+      int? value = other.value;
       for (int i = 0; i < options.length; i++) {
-        if (value == i)
+        if (value == i) {
           add(options.elementAt(i));
-        else
+        } else {
           remove(options.elementAt(i));
+        }
       }
     }
-    other.values.listen((int value) {
+    other.values.listen((int? value) {
       for (int i = 0; i < options.length; i++) {
-        if (value == i)
+        if (value == i) {
           add(options.elementAt(i));
-        else
+        } else {
           remove(options.elementAt(i));
+        }
       }
     });
   }
@@ -143,7 +145,7 @@ class Classes extends RxSet<String> {
 
   Classes.from(Iterable elements) : super.from(elements);
 
-  Classes.union(Iterable<String> elements, [String element])
+  Classes.union(Iterable<String> elements, [String? element])
       : super.union(elements, element);
 
   Classes.of(Iterable<String> elements) : super.of(elements);
@@ -169,14 +171,14 @@ class SetChangeNotification<E> {
 
   final DateTime time;
 
-  SetChangeNotification(this.element, this.op, {DateTime time})
+  SetChangeNotification(this.element, this.op, {DateTime? time})
       : time = time ?? DateTime.now();
 
-  SetChangeNotification.add(this.element, {DateTime time})
+  SetChangeNotification.add(this.element, {DateTime? time})
       : op = SetChangeOp.add,
         time = time ?? DateTime.now();
 
-  SetChangeNotification.remove(this.element, {DateTime time})
+  SetChangeNotification.remove(this.element, {DateTime? time})
       : op = SetChangeOp.remove,
         time = time ?? DateTime.now();
 }

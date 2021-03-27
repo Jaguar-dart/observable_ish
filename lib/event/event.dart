@@ -4,25 +4,35 @@ import 'package:observable_ish/observable_ish.dart';
 /// Emits events of type [T]
 abstract class Emitter<T> {
   factory Emitter() => StreamBackedEmitter<T>();
+
   /// Calls [callback] whenever there is an event
   void on(/* Callback | ValueCallback */ callback);
+
   /// Calls [callback] whenever there is an event. Returns a [StreamSubscription]
   /// to control the listening.
   StreamSubscription<T> listen(/* Callback | ValueCallback */ callback);
+
   /// Returns events as [Stream].
   Stream<T> get asStream;
+
   /// Pipes events to [other]
   void pipeTo(Emitter<T> other);
+
   /// Pipes events to [other]
   void pipeToValue(RxValue<T> other);
+
   /// Emits a [value]
   void emitOne(T value);
+
   /// Emits all of the [values]
   void emitAll(Iterable<T> values);
+
   /// Emits values of the [stream]
   void emitStream(Stream<T> stream);
+
   /// Emits values of [emitter]
   void emit(Emitter<T> emitter);
+
   /// Emits values of [value]
   void emitRxValue(RxValue<T> value);
 
@@ -30,35 +40,45 @@ abstract class Emitter<T> {
 }
 
 class StreamBackedEmitter<T> implements Emitter<T> {
-  final _streamer = StreamController<T>();
+  final StreamController<T> _streamer;
 
-  Stream<T> _stream;
+  final Stream<T> _stream;
 
-  StreamBackedEmitter() {
-    _stream = _streamer.stream.asBroadcastStream();
+  StreamBackedEmitter._(this._streamer, this._stream);
+
+  factory StreamBackedEmitter() {
+    final streamer = StreamController<T>();
+    final stream = streamer.stream.asBroadcastStream();
+    return StreamBackedEmitter._(streamer, stream);
   }
 
   void emitOne(T value) => _streamer.add(value);
 
   void emitAll(Iterable<T> values) {
-    for (T v in values) _streamer.add(v);
+    for (final v in values) {
+      _streamer.add(v);
+    }
   }
 
   void emitStream(Stream<T> stream) => _streamer.addStream(stream);
 
-  StreamSubscription<T> on(/* Callback | ValueCallback */ callback) {
-    if (callback is Callback)
+  StreamSubscription<T> on(dynamic /* Callback | ValueCallback */ callback) {
+
+    if (callback is Callback) {
       return _stream.listen((_) => callback());
-    else if (callback is ValueCallback<T>)
+    } else if (callback is ValueCallback<T>) {
       return _stream.listen(callback);
-    else
-      throw Exception('Invalid callback ${callback}!');
+    }
+    throw Exception('Invalid callback ${callback}!');
   }
 
-  StreamSubscription<T> listen(/* Callback | ValueCallback */ callback) {
-    if (callback is Callback)
+  StreamSubscription<T> listen(
+      dynamic /* Callback | ValueCallback */ callback) {
+    if (callback is Callback) {
       return _stream.listen((_) => callback());
-    else if (callback is ValueCallback<T>) return _stream.listen(callback);
+    } else if (callback is ValueCallback<T>) {
+      return _stream.listen(callback);
+    }
     throw Exception('Invalid callback!');
   }
 

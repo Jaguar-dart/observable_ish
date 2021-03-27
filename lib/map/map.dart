@@ -8,7 +8,7 @@ class RxMap<K, V> extends DelegatingMap<K, V> implements Map<K, V> {
 
   RxMap.of(Map<K, V> other) : super(Map<K, V>.of(other));
 
-  RxMap.fromIterable(Iterable iterable, {K key(element), V value(element)})
+  RxMap.fromIterable(Iterable iterable, {K key(element)?, V value(element)?})
       : super(Map<K, V>.fromIterable(iterable, key: key, value: value));
 
   RxMap.fromIterables(Iterable<K> keys, Iterable<V> values)

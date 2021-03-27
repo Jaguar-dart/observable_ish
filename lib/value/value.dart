@@ -9,9 +9,9 @@ export 'proxy_value.dart';
 
 /// Interface of an observable value of type [T]
 abstract class RxValue<T> {
-  factory RxValue({T initial}) => StoredValue<T>(initial: initial);
-  factory RxValue.proxy({ValueGetter<T> getterProxy}) =>
-      ProxyValue<T>(getterProxy: getterProxy);
+  factory RxValue(T initial) => StoredValue<T>(initial);
+  factory RxValue.proxy(ValueGetter<T> getterProxy) =>
+      ProxyValue<T>(getterProxy);
 
   /// Get current value
   T get value;
@@ -52,9 +52,13 @@ class Change<T> {
 
   /// Value after change
   final T neu;
+
   final DateTime time;
+
   final int batch;
-  Change(this.neu, this.old, this.batch, {DateTime time})
+
+  Change(this.neu, this.old, this.batch, {DateTime? time})
       : time = DateTime.now();
+
   String toString() => 'Change(new: $neu, old: $old)';
 }

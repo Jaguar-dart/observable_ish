@@ -5,28 +5,35 @@ import 'package:observable_ish/observable_ish.dart';
 class StoredValue<T> implements RxValue<T> {
   T _value;
   T get value => _value;
-  final _change = StreamController<Change<T>>();
   set value(T val) {
-    if (_value == val) return;
+    if (_value == val) {
+      return;
+    }
     T old = _value;
     _value = val;
     _change.add(Change<T>(val, old, _curBatch));
   }
 
+  final StreamController<Change<T>> _change;
+
+  final Stream<Change<T>> _onChange;
+
   int _curBatch = 0;
 
-  StoredValue({T initial}) : _value = initial {
-    _onChange = _change.stream.asBroadcastStream();
+  StoredValue._(this._value, this._change, this._onChange);
+
+  factory StoredValue(T initial) {
+    final controller = StreamController<Change<T>>();
+    return StoredValue._(
+        initial, controller, controller.stream.asBroadcastStream());
   }
 
   void setCast(dynamic /* T */ val) => value = val;
 
-  Stream<Change<T>> _onChange;
-
   Stream<Change<T>> get onChange {
     _curBatch++;
     final ret = StreamController<Change<T>>();
-    ret.add(Change<T>(value, null, _curBatch));
+    ret.add(Change<T>(value, value, _curBatch));
     ret.addStream(_onChange.skipWhile((v) => v.batch < _curBatch));
     return ret.stream.asBroadcastStream();
   }

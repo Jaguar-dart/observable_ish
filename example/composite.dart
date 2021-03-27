@@ -1,14 +1,14 @@
 import 'package:observable_ish/observable_ish.dart';
 
 class RxUser {
-  final name = RxValue<String>();
-  final age = RxValue<int>();
+  final name = RxValue<String>('');
+  final age = RxValue<int>(0);
 }
 
 class User {
   final rx = RxUser();
 
-  User({String name, int age}) {
+  User({required String name, required int age}) {
     this.name = name;
     this.age = age;
   }
@@ -26,7 +26,7 @@ main() {
   print(user.age);  // => 31
   print('---------');
   user.age = 32;
-  user.rx.age.listen((int v) => print(v));  // => 20, 25
+  user.rx.age.listen((int v) => print(v));  // => 32, 33, 34, 35
   user.age = 33;
   user.age = 34;
   user.age = 35;
