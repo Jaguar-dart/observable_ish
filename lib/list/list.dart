@@ -9,7 +9,7 @@ class RxList<E> extends DelegatingList<E> implements List<E> {
   final _changes = StreamController<ListChangeNotification<E>>();
 
   /// Create a list. Behaves similar to `List<int>([int length])`
-  RxList(): super(<E>[]) {
+  RxList() : super(<E>[]) {
     _onChange = _changes.stream.asBroadcastStream();
   }
 

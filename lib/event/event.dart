@@ -63,7 +63,6 @@ class StreamBackedEmitter<T> implements Emitter<T> {
   void emitStream(Stream<T> stream) => _streamer.addStream(stream);
 
   StreamSubscription<T> on(dynamic /* Callback | ValueCallback */ callback) {
-
     if (callback is Callback) {
       return _stream.listen((_) => callback());
     } else if (callback is ValueCallback<T>) {
