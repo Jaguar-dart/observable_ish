@@ -1,3 +1,7 @@
+## 3.0.1
+
++ `Listenable`
+
 ## 3.0.0
 
 + Null safety support

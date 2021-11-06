@@ -7,7 +7,7 @@ export 'event/event.dart';
 export 'list/list.dart';
 export 'map/map.dart';
 export 'set/set.dart';
-export 'value/value.dart';
+export 'value/value.dart' hide ListenableImpl;
 
 /// A callback with argument [v] of type [T].
 ///

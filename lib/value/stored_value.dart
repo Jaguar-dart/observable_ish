@@ -20,7 +20,11 @@ class StoredValue<T> implements RxValue<T> {
 
   int _curBatch = 0;
 
-  StoredValue._(this._value, this._change, this._onChange);
+  late Listenable listenable;
+
+  StoredValue._(this._value, this._change, this._onChange) {
+    listenable = ListenableImpl<T>(this);
+  }
 
   factory StoredValue(T initial) {
     final controller = StreamController<Change<T>>();
