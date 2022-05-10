@@ -1,13 +1,25 @@
 import 'dart:async';
 
 import 'package:observable_ish/observable_ish.dart';
-import 'stored_value.dart';
-import 'proxy_value.dart';
 
 export 'stored_value.dart';
 export 'proxy_value.dart';
 
-abstract class Listenable<T> {
+/// Interface of an observable value of type [T]
+abstract class RxValue<T> {
+  factory RxValue(T initial) => StoredValue<T>(initial);
+  factory RxValue.proxy(ValueGetter<T> getterProxy) =>
+      ProxyValue<T>(getterProxy);
+
+  /// Get current value
+  T get value;
+
+  /// Set value
+  set value(T val);
+
+  /// Cast [val] to [T] before setting
+  void setCast(dynamic /* T */ val);
+
   /// Stream of record of [Change]s of value
   Stream<Change<T>> get onChange;
 
@@ -31,22 +43,6 @@ abstract class Listenable<T> {
   Stream<R> map<R>(R mapper(T data));
 }
 
-/// Interface of an observable value of type [T]
-abstract class RxValue<T> implements Listenable<T> {
-  factory RxValue(T initial) => StoredValue<T>(initial);
-  factory RxValue.proxy(ValueGetter<T> getterProxy) =>
-      ProxyValue<T>(getterProxy);
-
-  /// Get current value
-  T get value;
-
-  /// Set value
-  set value(T val);
-
-  /// Cast [val] to [T] before setting
-  void setCast(dynamic /* T */ val);
-}
-
 /// A record of change in [RxValue]
 class Change<T> {
   /// Value before change
@@ -55,33 +51,7 @@ class Change<T> {
   /// Value after change
   final T neu;
 
-  final DateTime time;
-
-  final int batch;
-
-  Change(this.neu, this.old, this.batch, {DateTime? time})
-      : time = DateTime.now();
+  Change(this.neu, this.old);
 
   String toString() => 'Change(new: $neu, old: $old)';
-}
-
-class ListenableImpl<T> implements Listenable<T> {
-  final RxValue<T> _inner;
-
-  ListenableImpl(this._inner);
-
-  Stream<Change<T>> get onChange => _inner.onChange;
-
-  Stream<T> get values => _inner.values;
-
-  void bindOrSet(/* T | Stream<T> | Reactive<T> */ other) =>
-      _inner.bindOrSet(other);
-
-  void bind(RxValue<T> other) => bind(other);
-
-  void bindStream(Stream<T> stream) => bindStream(stream);
-
-  StreamSubscription<T> listen(ValueCallback<T> callback) => listen(callback);
-
-  Stream<R> map<R>(R mapper(T data)) => map(mapper);
 }

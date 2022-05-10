@@ -1,21 +1,29 @@
-import 'package:collection/collection.dart';
+import 'dart:async';
+import 'dart:collection';
+
 import 'package:observable_ish/observable_ish.dart';
 
-class RxMap<K, V> extends DelegatingMap<K, V> implements Map<K, V> {
-  RxMap() : super(<K, V>{});
+class RxMap<K, V> extends MapBase<K, V> {
+  final Map<K, V> _inner;
 
-  RxMap.from(Map other) : super(Map<K, V>.from(other));
+  final _changes = StreamController<MapChange<K, V>>.broadcast();
 
-  RxMap.of(Map<K, V> other) : super(Map<K, V>.of(other));
+  RxMap() : _inner = {};
+
+  RxMap.from(Map other) : _inner = Map<K, V>.from(other);
+
+  RxMap.of(Map<K, V> other) : _inner = Map<K, V>.of(other);
 
   RxMap.fromIterable(Iterable iterable, {K key(element)?, V value(element)?})
-      : super(Map<K, V>.fromIterable(iterable, key: key, value: value));
+      : _inner = Map<K, V>.fromIterable(iterable, key: key, value: value);
 
   RxMap.fromIterables(Iterable<K> keys, Iterable<V> values)
-      : super(Map<K, V>.fromIterables(keys, values));
+      : _inner = Map<K, V>.fromIterables(keys, values);
 
   RxMap.fromEntries(Iterable<MapEntry<K, V>> entries)
-      : super(Map<K, V>.fromEntries(entries));
+      : _inner = Map<K, V>.fromEntries(entries);
+
+  Stream<MapChange<K, V>> get onChange => _changes.stream;
 
   void add(K key, V value) => this[key] = value;
 
@@ -28,4 +36,47 @@ class RxMap<K, V> extends DelegatingMap<K, V> implements Map<K, V> {
     if (condition is Condition) condition = condition();
     if (condition is bool && condition) addAll(values);
   }
+
+  @override
+  operator []=(K key, V value) {
+    bool isSet = _inner.containsKey(key);
+    _inner[key] = value;
+    _changes
+        .add(MapChange(MapEntry(key, value), isSet ? MapOp.set : MapOp.add));
+  }
+
+  @override
+  V? operator [](Object? key) => _inner[key];
+
+  @override
+  Iterable<K> get keys => _inner.keys;
+
+  @override
+  void clear() {
+    _inner.clear();
+    _changes.add(MapChange(null, MapOp.clear));
+  }
+
+  @override
+  V? remove(Object? key) {
+    bool isRemoved = _inner.containsKey(key);
+    final ret = _inner.remove(key);
+    if (isRemoved) {
+      _changes.add(MapChange(MapEntry(key as K, ret as V), MapOp.remove));
+    }
+    return ret;
+  }
+}
+
+/// Change operation
+enum MapOp { add, remove, clear, set }
+
+class MapChange<K, V> {
+  final MapEntry<K, V>? entry;
+
+  final MapOp op;
+
+  MapChange(this.entry, this.op);
+
+  String toString() => 'MapChange($entry, $op)';
 }

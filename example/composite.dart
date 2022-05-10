@@ -22,6 +22,7 @@ class User {
 
 main() {
   final user = User(name: 'Messi', age: 30);
+  print('age: ${user.age}'); // => 30
   user.age = 31;
   user.age = 32;
   user.rx.age.listen((int v) => print(v)); // => 32, 33, 34, 35

@@ -3,8 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:observable_ish/observable_ish.dart';
 
 class RxSet<E> extends DelegatingSet<E> implements Set<E> {
-  final _changes = StreamController<SetChangeNotification<E>>();
-  Stream<SetChangeNotification<E>>? _stream;
+  final _changes = StreamController<SetChange<E>>.broadcast();
 
   RxSet() : super(Set<E>());
 
@@ -32,7 +31,7 @@ class RxSet<E> extends DelegatingSet<E> implements Set<E> {
   bool add(E element) {
     bool ret = super.add(element);
     if (ret) {
-      _changes.add(SetChangeNotification<E>.add(element));
+      _changes.add(SetChange<E>.add(element));
     }
     return ret;
   }
@@ -45,7 +44,7 @@ class RxSet<E> extends DelegatingSet<E> implements Set<E> {
   bool remove(Object? element) {
     bool hasRemoved = super.remove(element);
     if (hasRemoved) {
-      _changes.add(SetChangeNotification<E>.remove(element as E));
+      _changes.add(SetChange<E>.remove(element as E));
     }
     return hasRemoved;
   }
@@ -54,18 +53,11 @@ class RxSet<E> extends DelegatingSet<E> implements Set<E> {
     Iterable<E> removed = toList();
     super.clear();
     for (E el in removed) {
-      _changes.add(SetChangeNotification<E>.remove(el));
+      _changes.add(SetChange<E>.remove(el));
     }
   }
 
-  Stream<SetChangeNotification<E>> get _onChange =>
-      _stream ??= _changes.stream.asBroadcastStream();
-
-  Stream<SetChangeNotification<E>> get onChange {
-    final ret = StreamController<SetChangeNotification<E>>();
-    ret.addStream(_onChange);
-    return ret.stream.asBroadcastStream();
-  }
+  Stream<SetChange<E>> get onChange => _changes.stream;
 
   void bindBool(E element, Stream<bool> stream, [bool initial = false]) {
     if (initial) {
@@ -160,25 +152,18 @@ class Classes extends RxSet<String> {
   }
 }
 
-enum SetChangeOp { add, remove }
+enum SetOp { add, remove }
 
-typedef dynamic SetChangeCallBack<E>(E element, SetChangeOp isAdd, int pos);
+typedef dynamic SetChangeCallBack<E>(E element, SetOp isAdd, int pos);
 
-class SetChangeNotification<E> {
+class SetChange<E> {
   final E element;
 
-  final SetChangeOp op;
+  final SetOp op;
 
-  final DateTime time;
+  SetChange(this.element, this.op);
 
-  SetChangeNotification(this.element, this.op, {DateTime? time})
-      : time = time ?? DateTime.now();
+  SetChange.add(this.element) : op = SetOp.add;
 
-  SetChangeNotification.add(this.element, {DateTime? time})
-      : op = SetChangeOp.add,
-        time = time ?? DateTime.now();
-
-  SetChangeNotification.remove(this.element, {DateTime? time})
-      : op = SetChangeOp.remove,
-        time = time ?? DateTime.now();
+  SetChange.remove(this.element) : op = SetOp.remove;
 }

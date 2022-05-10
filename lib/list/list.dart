@@ -4,24 +4,16 @@ import 'package:observable_ish/observable_ish.dart';
 
 /// Observable list
 class RxList<E> extends DelegatingList<E> implements List<E> {
-  Stream<ListChangeNotification<E>>? _onChange;
-
-  final _changes = StreamController<ListChangeNotification<E>>();
+  final _changes = StreamController<ListChange<E>>.broadcast();
 
   /// Create a list. Behaves similar to `List<int>([int length])`
-  RxList() : super(<E>[]) {
-    _onChange = _changes.stream.asBroadcastStream();
-  }
+  RxList() : super(<E>[]);
 
   RxList.filled(int length, E fill, {bool growable: false})
-      : super(List<E>.filled(length, fill, growable: growable)) {
-    _onChange = _changes.stream.asBroadcastStream();
-  }
+      : super(List<E>.filled(length, fill, growable: growable));
 
   RxList.from(Iterable<E> elements, {bool growable: true})
-      : super(List<E>.from(elements, growable: growable)) {
-    _onChange = _changes.stream.asBroadcastStream();
-  }
+      : super(List<E>.from(elements, growable: growable));
 
   RxList.of(Iterable<E> elements, {bool growable: true})
       : super(List<E>.of(elements, growable: growable));
@@ -43,20 +35,18 @@ class RxList<E> extends DelegatingList<E> implements List<E> {
 
   operator []=(int index, E value) {
     super[index] = value;
-    _changes.add(ListChangeNotification<E>.set(value, index));
+    _changes.add(ListChange<E>.set(value, index));
   }
-
-  void _add(E element) => super.add(element);
 
   void add(E element) {
     super.add(element);
-    _changes.add(ListChangeNotification<E>.insert(element, length - 1));
+    _changes.add(ListChange<E>.insert(element, length - 1));
   }
 
   void addAll(Iterable<E> elements) {
     super.addAll(elements);
-    elements.forEach((element) =>
-        _changes.add(ListChangeNotification<E>.insert(element, length - 1)));
+    elements.forEach(
+        (element) => _changes.add(ListChange<E>.insert(element, length - 1)));
   }
 
   /// Adds only if [element] is not null.
@@ -66,21 +56,21 @@ class RxList<E> extends DelegatingList<E> implements List<E> {
 
   void insert(int index, E element) {
     super.insert(index, element);
-    _changes.add(ListChangeNotification<E>.insert(element, index));
+    _changes.add(ListChange<E>.insert(element, index));
   }
 
   bool remove(final Object? element) {
     int pos = indexOf(element as E);
     bool hasRemoved = super.remove(element);
     if (hasRemoved) {
-      _changes.add(ListChangeNotification<E>.remove(element, pos));
+      _changes.add(ListChange<E>.remove(element, pos));
     }
     return hasRemoved;
   }
 
   void clear() {
     super.clear();
-    _changes.add(ListChangeNotification<E>.clear());
+    _changes.add(ListChange<E>.clear());
   }
 
   /// Replaces all existing elements of this list with [element]
@@ -96,12 +86,7 @@ class RxList<E> extends DelegatingList<E> implements List<E> {
   }
 
   /// A stream of record of changes to this list
-  Stream<ListChangeNotification<E>> get onChange {
-    final ret = StreamController<ListChangeNotification<E>>();
-    final now = DateTime.now();
-    ret.addStream(_onChange!.skipWhile((m) => m.time.isBefore(now)));
-    return ret.stream.asBroadcastStream();
-  }
+  Stream<ListChange<E>> get onChange => _changes.stream;
 }
 
 typedef E ChildrenListComposer<S, E>(S value);
@@ -113,13 +98,13 @@ class BoundList<S, E> extends RxList<E> {
   final ChildrenListComposer<S, E> composer;
 
   BoundList(this.binding, this.composer) {
-    for (S v in binding) _add(composer(v));
-    binding.onChange.listen((ListChangeNotification<S> n) {
-      if (n.op == ListChangeOp.add) {
+    for (S v in binding) super.add(composer(v));
+    binding.onChange.listen((ListChange<S> n) {
+      if (n.op == ListOp.add) {
         insert(n.pos!, composer(n.element!));
-      } else if (n.op == ListChangeOp.remove) {
+      } else if (n.op == ListOp.remove) {
         removeAt(n.pos!);
-      } else if (n.op == ListChangeOp.clear) {
+      } else if (n.op == ListOp.clear) {
         clear();
       }
     });
@@ -127,36 +112,26 @@ class BoundList<S, E> extends RxList<E> {
 }
 
 /// Change operation
-enum ListChangeOp { add, remove, clear, set }
+enum ListOp { add, remove, clear, set }
 
 /// A record of change in a [RxList]
-class ListChangeNotification<E> {
+class ListChange<E> {
   final E? element;
 
-  final ListChangeOp op;
+  final ListOp op;
 
   final int? pos;
 
-  final DateTime time;
+  ListChange(this.element, this.op, this.pos);
 
-  ListChangeNotification(this.element, this.op, this.pos, {DateTime? time})
-      : time = time ?? DateTime.now();
+  ListChange.insert(this.element, this.pos) : op = ListOp.add;
 
-  ListChangeNotification.insert(this.element, this.pos, {DateTime? time})
-      : op = ListChangeOp.add,
-        time = time ?? DateTime.now();
+  ListChange.set(this.element, this.pos) : op = ListOp.set;
 
-  ListChangeNotification.set(this.element, this.pos, {DateTime? time})
-      : op = ListChangeOp.set,
-        time = time ?? DateTime.now();
+  ListChange.remove(this.element, this.pos) : op = ListOp.remove;
 
-  ListChangeNotification.remove(this.element, this.pos, {DateTime? time})
-      : op = ListChangeOp.remove,
-        time = time ?? DateTime.now();
-
-  ListChangeNotification.clear({DateTime? time})
-      : op = ListChangeOp.clear,
+  ListChange.clear()
+      : op = ListOp.clear,
         pos = null,
-        element = null,
-        time = time ?? DateTime.now();
+        element = null;
 }

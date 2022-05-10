@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'value.dart';
 import 'package:observable_ish/observable_ish.dart';
 
 class StoredValue<T> implements RxValue<T> {
@@ -11,34 +10,28 @@ class StoredValue<T> implements RxValue<T> {
     }
     T old = _value;
     _value = val;
-    _change.add(Change<T>(val, old, _curBatch));
+    _change.add(Change<T>(val, old));
   }
 
-  final _change = StreamController<Change<T>>();
+  final _change = StreamController<Change<T>>.broadcast();
 
-  int _curBatch = 0;
-
-  late Listenable listenable;
-
-  StoredValue(T initial): _value = initial {
-    listenable = ListenableImpl<T>(this);
-  }
+  StoredValue(T initial) : _value = initial;
 
   void setCast(dynamic /* T */ val) => value = val;
 
-  Stream<Change<T>> get onChange {
-    _curBatch++;
-    final ret = StreamController<Change<T>>();
-    ret.add(Change<T>(value, value, _curBatch));
-    ret.addStream(_onChange.skipWhile((v) => v.batch < _curBatch));
-    return ret.stream.asBroadcastStream();
+  Stream<Change<T>> get onChange => _change.stream;
+
+  Stream<T> get values async* {
+    yield _value;
+    await for (final v in onChange) {
+      yield v.neu;
+    }
   }
 
-  Stream<T> get values => onChange.map((c) => c.neu);
-
-  void bind(RxValue<T> reactive) {
-    value = reactive.value;
-    reactive.values.listen((v) => value = v);
+  /// When [other] changes, the c
+  void bind(RxValue<T> other) {
+    value = other.value;
+    other.values.listen((v) => value = v);
   }
 
   void bindStream(Stream<T> stream) => stream.listen((v) => value = v);

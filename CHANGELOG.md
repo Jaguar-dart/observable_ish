@@ -1,3 +1,13 @@
+## 4.0.0
+
++ `RxMap`is now implemented
+  **Breaking changes:**
++ `ListChangeNotification` renamed to `ListChange`
++ `ListChangeOp` renamed to `ListOp`
++ `SetChangeNotification` to `SetChange`
++ `SetChangeOp` to `SetOp`
++ `Listenable` removed
+
 ## 3.0.1
 
 + `Listenable`
