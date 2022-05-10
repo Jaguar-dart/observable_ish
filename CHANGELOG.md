@@ -1,3 +1,7 @@
+## 4.0.1
+
++ Minor changes
+
 ## 4.0.0
 
 + `RxMap`is now implemented
