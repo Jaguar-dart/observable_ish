@@ -14,22 +14,14 @@ class StoredValue<T> implements RxValue<T> {
     _change.add(Change<T>(val, old, _curBatch));
   }
 
-  final StreamController<Change<T>> _change;
-
-  final Stream<Change<T>> _onChange;
+  final _change = StreamController<Change<T>>();
 
   int _curBatch = 0;
 
   late Listenable listenable;
 
-  StoredValue._(this._value, this._change, this._onChange) {
+  StoredValue(T initial): _value = initial {
     listenable = ListenableImpl<T>(this);
-  }
-
-  factory StoredValue(T initial) {
-    final controller = StreamController<Change<T>>();
-    return StoredValue._(
-        initial, controller, controller.stream.asBroadcastStream());
   }
 
   void setCast(dynamic /* T */ val) => value = val;
