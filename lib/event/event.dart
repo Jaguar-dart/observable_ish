@@ -36,6 +36,9 @@ abstract class Emitter<T> {
   /// Emits values of [value]
   void emitRxValue(RxValue<T> value);
 
+  /// Emits values of [value]
+  void emitRxValues(List<RxValue<T>> value);
+
   Future<void> dispose();
 }
 
@@ -81,6 +84,12 @@ class StreamBackedEmitter<T> implements Emitter<T> {
 
   void emitRxValue(RxValue<T> value) {
     _streamer.addStream(value.values);
+  }
+
+  void emitRxValues(List<RxValue<T>> values) {
+    for(final value in values) {
+      emitRxValue(value);
+    }
   }
 
   Future<void> dispose() => _streamer.close();

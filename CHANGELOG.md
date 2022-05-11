@@ -1,3 +1,7 @@
+## 4.0.2
+
++ `Emitter.emitRxValues`
+
 ## 4.0.1
 
 + Minor changes
