@@ -1,9 +1,6 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
 library observable_ish;
 
-export 'event/event.dart';
+export 'emitter/emitter.dart';
 export 'list/list.dart';
 export 'map/map.dart';
 export 'set/set.dart';

@@ -3,7 +3,16 @@ import 'package:observable_ish/observable_ish.dart';
 
 /// Emits events of type [T]
 abstract class Emitter<T> {
-  factory Emitter() => StreamBackedEmitter<T>();
+  factory Emitter(
+          {List<RxValue<T>> emitRxValues = const [],
+          List<Stream<T>> emitStreams = const [],
+          Stream<T>? emitStream,
+          RxValue<T>? emitRxValue}) =>
+      StreamBackedEmitter<T>(
+          emitRxValue: emitRxValue,
+          emitStreams: emitStreams,
+          emitStream: emitStream,
+          emitRxValues: emitRxValues);
 
   /// Calls [callback] whenever there is an event
   void on(/* Callback | ValueCallback */ callback);
@@ -45,6 +54,17 @@ abstract class Emitter<T> {
 class StreamBackedEmitter<T> implements Emitter<T> {
   final _streamer = StreamController<T>.broadcast();
 
+  StreamBackedEmitter(
+      {List<RxValue<T>> emitRxValues = const [],
+      List<Stream<T>> emitStreams = const [],
+      Stream<T>? emitStream,
+      RxValue<T>? emitRxValue}) {
+    this.emitRxValues(emitRxValues);
+    this.emitStreams(emitStreams);
+    if (emitRxValue != null) this.emitRxValue(emitRxValue);
+    if (emitStream != null) this.emitStream(emitStream);
+  }
+
   void emitOne(T value) => _streamer.add(value);
 
   void emitAll(Iterable<T> values) {
@@ -54,6 +74,9 @@ class StreamBackedEmitter<T> implements Emitter<T> {
   }
 
   void emitStream(Stream<T> stream) => _streamer.addStream(stream);
+
+  void emitStreams(List<Stream<T>> stream) =>
+      stream.forEach(_streamer.addStream);
 
   StreamSubscription<T> on(dynamic /* Callback | ValueCallback */ callback) {
     if (callback is Callback) {
@@ -86,11 +109,8 @@ class StreamBackedEmitter<T> implements Emitter<T> {
     _streamer.addStream(value.values);
   }
 
-  void emitRxValues(List<RxValue<T>> values) {
-    for(final value in values) {
-      emitRxValue(value);
-    }
-  }
+  void emitRxValues(List<RxValue<T>> values) =>
+      values.forEach((v) => _streamer.addStream(v.values));
 
   Future<void> dispose() => _streamer.close();
 }
