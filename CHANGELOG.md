@@ -1,3 +1,7 @@
+## 4.0.4
+
++ `Emitter.emitRxValue` and `Emitter.emitRxValues` fixes
+
 ## 4.0.3
 
 + `Emitter` helpful constructor parameters

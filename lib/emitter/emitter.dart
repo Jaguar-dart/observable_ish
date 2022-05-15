@@ -73,10 +73,13 @@ class StreamBackedEmitter<T> implements Emitter<T> {
     }
   }
 
-  void emitStream(Stream<T> stream) => _streamer.addStream(stream);
+  void emitStream(Stream<T> stream) {
+    stream.listen((event) {
+      _streamer.add(event);
+    });
+  }
 
-  void emitStreams(List<Stream<T>> stream) =>
-      stream.forEach(_streamer.addStream);
+  void emitStreams(List<Stream<T>> stream) => stream.forEach(emitStream);
 
   StreamSubscription<T> on(dynamic /* Callback | ValueCallback */ callback) {
     if (callback is Callback) {
@@ -106,11 +109,10 @@ class StreamBackedEmitter<T> implements Emitter<T> {
   void pipeToValue(RxValue<T> other) => other.bindStream(asStream);
 
   void emitRxValue(RxValue<T> value) {
-    _streamer.addStream(value.values);
+    emitStream(value.values);
   }
 
-  void emitRxValues(List<RxValue<T>> values) =>
-      values.forEach((v) => _streamer.addStream(v.values));
+  void emitRxValues(List<RxValue<T>> values) => values.forEach(emitRxValue);
 
   Future<void> dispose() => _streamer.close();
 }
