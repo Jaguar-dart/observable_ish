@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:observable_ish/observable_ish.dart';
 
-class StoredValue<T> implements RxValue<T> {
+class StoredValue<T> with RxListenable<T> implements RxValue<T> {
   T _value;
   T get value => _value;
   set value(T val) {
@@ -17,16 +17,9 @@ class StoredValue<T> implements RxValue<T> {
 
   StoredValue(T initial) : _value = initial;
 
-  void setCast(dynamic /* T */ val) => value = val;
-
   Stream<Change<T>> get onChange => _change.stream;
 
-  Stream<T> get values async* {
-    yield _value;
-    await for (final v in onChange) {
-      yield v.neu;
-    }
-  }
+  void setCast(dynamic /* T */ val) => value = val;
 
   /// When [other] changes, the c
   void bind(RxValue<T> other) {
@@ -46,8 +39,5 @@ class StoredValue<T> implements RxValue<T> {
     }
   }
 
-  StreamSubscription<T> listen(ValueCallback<T> callback) =>
-      values.listen(callback);
-
-  Stream<R> map<R>(R mapper(T data)) => values.map(mapper);
+  RxListenable<T> get listenable => RxListenableImpl(() => _value, onChange);
 }

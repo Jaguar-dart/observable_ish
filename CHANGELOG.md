@@ -1,3 +1,8 @@
+## 4.0.5
+
++ `RxListenable`
++ `RxValue.listenable`
+
 ## 4.0.4
 
 + `Emitter.emitRxValue` and `Emitter.emitRxValues` fixes

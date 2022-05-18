@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:observable_ish/observable_ish.dart';
 
-class ProxyValue<T> implements RxValue<T> {
+class ProxyValue<T> with RxListenable<T> implements RxValue<T> {
   ValueGetter<T> getter;
   ValueSetter<T>? setter;
 
@@ -19,16 +19,9 @@ class ProxyValue<T> implements RxValue<T> {
     _controller.add(Change<T>(val, old));
   }
 
-  void setCast(dynamic /* T */ val) => value = val;
-
   Stream<Change<T>> get onChange => _controller.stream;
 
-  Stream<T> get values async* {
-    yield getter();
-    await for (final v in onChange) {
-      yield v.neu;
-    }
-  }
+  void setCast(dynamic /* T */ val) => value = val;
 
   void bind(RxValue<T> reactive) {
     value = reactive.value;
@@ -47,8 +40,5 @@ class ProxyValue<T> implements RxValue<T> {
     }
   }
 
-  StreamSubscription<T> listen(ValueCallback<T> callback) =>
-      values.listen(callback);
-
-  Stream<R> map<R>(R mapper(T data)) => values.map(mapper);
+  RxListenable<T> get listenable => RxListenableImpl(getter, onChange);
 }
