@@ -1,7 +1,7 @@
 name: observable_ish
 description: |
   Write elegant reactive cross-platform client side application using observable states and event emitters.
-version: 4.0.5
+version: 4.0.6
 homepage: https://github.com/Jaguar-dart/observable_ish
 documentation:
 

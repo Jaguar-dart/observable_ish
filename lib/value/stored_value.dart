@@ -39,5 +39,5 @@ class StoredValue<T> with RxListenable<T> implements RxValue<T> {
     }
   }
 
-  RxListenable<T> get listenable => RxListenableImpl(() => _value, onChange);
+  late final RxListenable<T> listenable = RxListenableImpl(() => _value, onChange);
 }
