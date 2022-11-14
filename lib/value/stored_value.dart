@@ -39,5 +39,10 @@ class StoredValue<T> with RxListenable<T> implements RxValue<T> {
     }
   }
 
-  late final RxListenable<T> listenable = RxListenableImpl(() => _value, onChange);
+  late final RxListenable<T> listenable =
+      RxListenableImpl(() => _value, onChange);
+
+  Future<void> dispose() async {
+    await _change.close();
+  }
 }

@@ -87,6 +87,10 @@ class RxList<E> extends DelegatingList<E> implements List<E> {
 
   /// A stream of record of changes to this list
   Stream<ListChange<E>> get onChange => _changes.stream;
+
+  Future<void> dispose() async {
+    await _changes.close();
+  }
 }
 
 typedef E ChildrenListComposer<S, E>(S value);

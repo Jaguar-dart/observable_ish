@@ -66,6 +66,10 @@ class RxMap<K, V> extends MapBase<K, V> {
     }
     return ret;
   }
+
+  Future<void> dispose() async {
+    await _changes.close();
+  }
 }
 
 /// Change operation

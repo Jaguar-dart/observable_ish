@@ -130,6 +130,10 @@ class RxSet<E> extends DelegatingSet<E> implements Set<E> {
       }
     });
   }
+
+  Future<void> dispose() async {
+    await _changes.close();
+  }
 }
 
 class Classes extends RxSet<String> {

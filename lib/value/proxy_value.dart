@@ -41,4 +41,8 @@ class ProxyValue<T> with RxListenable<T> implements RxValue<T> {
   }
 
   late final RxListenable<T> listenable = RxListenableImpl(getter, onChange);
+
+  Future<void> dispose() async {
+    await _controller.close();
+  }
 }

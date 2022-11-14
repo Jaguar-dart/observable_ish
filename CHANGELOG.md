@@ -1,3 +1,7 @@
+## 4.0.7
+
++ `dispose` method
+
 ## 4.0.6
 
 + Converted `RxValue.listenable` from getter to property

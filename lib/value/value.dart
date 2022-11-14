@@ -77,6 +77,8 @@ abstract class RxValue<T> implements RxListenable<T> {
   Stream<R> map<R>(R mapper(T data));
 
   RxListenable<T> get listenable;
+
+  Future<void> dispose();
 }
 
 /// A record of change in [RxValue]
