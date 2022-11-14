@@ -14,9 +14,6 @@ abstract class Emitter<T> {
           emitStream: emitStream,
           emitRxValues: emitRxValues);
 
-  /// Calls [callback] whenever there is an event
-  void on(/* Callback | ValueCallback */ callback);
-
   /// Calls [callback] whenever there is an event. Returns a [StreamSubscription]
   /// to control the listening.
   StreamSubscription<T> listen(/* Callback | ValueCallback */ callback);
@@ -65,42 +62,43 @@ class StreamBackedEmitter<T> implements Emitter<T> {
     if (emitStream != null) this.emitStream(emitStream);
   }
 
-  void emitOne(T value) => _streamer.add(value);
+  void emitOne(T value) {
+    if (_streamer.isClosed) return;
+    _streamer.add(value);
+  }
 
   void emitAll(Iterable<T> values) {
+    if (_streamer.isClosed) return;
     for (final v in values) {
       _streamer.add(v);
     }
   }
 
   void emitStream(Stream<T> stream) {
-    stream.listen((event) {
+    if (_streamer.isClosed) return;
+    late StreamSubscription sub;
+    sub = stream.listen((event) {
+      if (_streamer.isClosed) {
+        sub.cancel();
+        return;
+      }
       _streamer.add(event);
     });
   }
 
   void emitStreams(List<Stream<T>> stream) => stream.forEach(emitStream);
 
-  StreamSubscription<T> on(dynamic /* Callback | ValueCallback */ callback) {
-    if (callback is Callback) {
-      return _streamer.stream.listen((_) => callback());
-    } else if (callback is ValueCallback<T>) {
-      return _streamer.stream.listen(callback);
-    }
-    throw Exception('Invalid callback ${callback}!');
-  }
-
   StreamSubscription<T> listen(
       dynamic /* Callback | ValueCallback */ callback) {
     if (callback is Callback) {
-      return _streamer.stream.listen((_) => callback());
+      return asStream.listen((_) => callback());
     } else if (callback is ValueCallback<T>) {
-      return _streamer.stream.listen(callback);
+      return asStream.listen(callback);
     }
     throw Exception('Invalid callback!');
   }
 
-  void emit(Emitter<T> emitter) => emitter.listen(emitOne);
+  void emit(Emitter<T> emitter) => emitStream(emitter.asStream);
 
   Stream<T> get asStream => _streamer.stream;
 

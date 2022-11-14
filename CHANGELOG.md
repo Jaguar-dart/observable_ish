@@ -1,3 +1,10 @@
+## 4.0.8
+
++ `Emitter` bug fixes when events are added after dispose.
+
+**Breaking changes:**
++ `Emitter.on` method is removed
+
 ## 4.0.7
 
 + `dispose` method
