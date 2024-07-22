@@ -1,3 +1,7 @@
+## 5.0.0
+
++ `RxList` fixes
+
 ## 4.0.8
 
 + `Emitter` bug fixes when events are added after dispose.

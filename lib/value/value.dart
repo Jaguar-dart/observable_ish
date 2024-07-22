@@ -5,7 +5,7 @@ import 'package:observable_ish/observable_ish.dart';
 export 'stored_value.dart';
 export 'proxy_value.dart';
 
-abstract class RxListenable<T> {
+abstract mixin class RxListenable<T> {
   T get value;
 
   Stream<Change<T>> get onChange;
