@@ -46,7 +46,7 @@ class RxList<E> extends ListBase<E> implements List<E> {
   void addAll(Iterable<E> elements) {
     int oldLength = length;
     _inner.addAll(elements);
-    for(int i = 0; i < elements.length; i++) {
+    for (int i = 0; i < elements.length; i++) {
       _changes.add(ListChange<E>.insert(elements.elementAt(i), oldLength + i));
     }
   }
@@ -63,6 +63,28 @@ class RxList<E> extends ListBase<E> implements List<E> {
       _changes.add(ListChange<E>.remove(element, pos));
     }
     return hasRemoved;
+  }
+
+  void removeWhere(bool test(E element)) {
+    for (int i = 0; i < length; i++) {
+      if (!test(_inner[i])) continue;
+
+      final removed = _inner[i];
+      _inner.removeAt(i);
+      _changes.add(ListChange<E>.remove(removed, i));
+      i--;
+    }
+  }
+
+  void retainWhere(bool test(E element)) {
+    for (int i = 0; i < length; i++) {
+      if (test(_inner[i])) continue;
+
+      final removed = _inner[i];
+      _inner.removeAt(i);
+      _changes.add(ListChange<E>.remove(removed, i));
+      i--;
+    }
   }
 
   void clear() {

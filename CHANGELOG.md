@@ -1,3 +1,7 @@
+## 5.0.1
+
++ `RxList.removeWhere` and `RxList.retainWhere` fixes
+
 ## 5.0.0
 
 + `RxList` fixes
