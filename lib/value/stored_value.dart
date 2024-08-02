@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:observable_ish/observable_ish.dart';
 
-class StoredValue<T> with RxListenable<T> implements RxValue<T> {
+class RxStoredValue<T> with RxListenable<T> implements RxValue<T> {
   T _value;
   T get value => _value;
   set value(T val) {
@@ -15,7 +15,7 @@ class StoredValue<T> with RxListenable<T> implements RxValue<T> {
 
   final _change = StreamController<Change<T>>.broadcast();
 
-  StoredValue(T initial) : _value = initial;
+  RxStoredValue(T initial) : _value = initial;
 
   Stream<Change<T>> get onChange => _change.stream;
 

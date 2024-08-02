@@ -1,3 +1,10 @@
+## 6.0.2
+
+**Breaking changes:**
++ `StoredValue` renamed to `RxStoredValue`
++ `ProxyValue` renamed to `RxProxyValue`
++ `RxProxyValue.mapKey` and `RxValue.proxyMapKey`
+
 ## 5.0.1
 
 + `RxList.removeWhere` and `RxList.retainWhere` fixes

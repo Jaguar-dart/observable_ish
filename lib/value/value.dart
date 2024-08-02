@@ -41,9 +41,13 @@ class RxListenableImpl<T> extends RxListenable<T> {
 
 /// Interface of an observable value of type [T]
 abstract class RxValue<T> implements RxListenable<T> {
-  factory RxValue(T initial) => StoredValue<T>(initial);
-  factory RxValue.proxy(ValueGetter<T> getterProxy) =>
-      ProxyValue<T>(getterProxy);
+  factory RxValue(T initial) => RxStoredValue<T>(initial);
+
+  factory RxValue.proxy(ValueGetter<T> getter, {ValueSetter<T>? setter}) =>
+      RxProxyValue<T>(getter, setter: setter);
+
+  factory RxValue.proxyMapKey(Map map, String key) =>
+      RxProxyValue.mapKey(map, key);
 
   /// Get current value
   T get value;

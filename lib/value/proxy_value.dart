@@ -1,13 +1,17 @@
 import 'dart:async';
 import 'package:observable_ish/observable_ish.dart';
 
-class ProxyValue<T> with RxListenable<T> implements RxValue<T> {
+class RxProxyValue<T> with RxListenable<T> implements RxValue<T> {
   ValueGetter<T> getter;
   ValueSetter<T>? setter;
 
   final _controller = StreamController<Change<T>>.broadcast();
 
-  ProxyValue(this.getter, {this.setter});
+  RxProxyValue(this.getter, {this.setter});
+
+  factory RxProxyValue.mapKey(Map map, String key) {
+    return RxProxyValue(() => map[key], setter: (val) => map[key] = val);
+  }
 
   T get value => getter();
   set value(T val) {
