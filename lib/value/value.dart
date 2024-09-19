@@ -1,99 +1,46 @@
-import 'dart:async';
-
 import 'package:observable_ish/observable_ish.dart';
 
-export 'stored_value.dart';
-export 'proxy_value.dart';
+export 'rx/rx_value.dart';
 
-abstract mixin class RxListenable<T> {
+abstract class Value<T> {
   T get value;
 
-  Stream<Change<T>> get onChange;
+  set value(T value);
 
-  Stream<T> get values async* {
-    yield value;
-    await for (final v in onChange) {
-      yield v.neu;
+  factory Value(T value) => _Value<T>(value);
+
+  factory Value.proxy(ValueGetter<T> getter, {ValueSetter<T>? setter}) =>
+      ProxyValue<T>(getter, setter: setter);
+
+  factory Value.proxyMapKey(Map map, String key) => ProxyValue.mapKey(map, key);
+}
+
+class _Value<T> implements Value<T> {
+  T _value;
+
+  _Value(this._value);
+
+  T get value => _value;
+
+  set value(T value) {
+    _value = value;
+  }
+}
+
+class ProxyValue<T> implements Value<T> {
+  ValueGetter<T> getter;
+  ValueSetter<T>? setter;
+
+  ProxyValue(this.getter, {this.setter});
+
+  factory ProxyValue.mapKey(Map map, String key) =>
+      ProxyValue(() => map[key], setter: (val) => map[key] = val);
+
+  T get value => getter();
+
+  set value(T value) {
+    if (setter != null) {
+      setter!(value);
     }
   }
-
-  /// Calls [callback] with current value, when the value changes.
-  StreamSubscription<T> listen(ValueCallback<T> callback) =>
-      values.listen(callback);
-
-  /// Maps the changes into a [Stream] of [R]
-  Stream<R> map<R>(R mapper(T data)) => values.map(mapper);
-}
-
-class RxListenableImpl<T> extends RxListenable<T> {
-  final ValueGetter<T> _getter;
-  final Stream<Change<T>> onChange;
-
-  RxListenableImpl(this._getter, this.onChange);
-
-  T get value => _getter();
-
-  StreamSubscription<T> listen(ValueCallback<T> callback) =>
-      values.listen(callback);
-
-  Stream<R> map<R>(R mapper(T data)) => values.map(mapper);
-}
-
-/// Interface of an observable value of type [T]
-abstract class RxValue<T> implements RxListenable<T> {
-  factory RxValue(T initial) => RxStoredValue<T>(initial);
-
-  factory RxValue.proxy(ValueGetter<T> getter, {ValueSetter<T>? setter}) =>
-      RxProxyValue<T>(getter, setter: setter);
-
-  factory RxValue.proxyMapKey(Map map, String key) =>
-      RxProxyValue.mapKey(map, key);
-
-  /// Get current value
-  T get value;
-
-  /// Set value
-  set value(T val);
-
-  /// Cast [val] to [T] before setting
-  void setCast(dynamic /* T */ val);
-
-  /// Stream of record of [Change]s of value
-  Stream<Change<T>> get onChange;
-
-  /// Stream of changes of value
-  Stream<T> get values;
-
-  /// Binds if [other] is [Stream] or [RxValue] of type [T]. Sets if [other] is
-  /// instance of [T]
-  void bindOrSet(/* T | Stream<T> | Reactive<T> */ other);
-
-  /// Binds [other] to this
-  void bind(RxValue<T> other);
-
-  /// Binds the [stream] to this
-  void bindStream(Stream<T> stream);
-
-  /// Calls [callback] with current value, when the value changes.
-  StreamSubscription<T> listen(ValueCallback<T> callback);
-
-  /// Maps the changes into a [Stream] of [R]
-  Stream<R> map<R>(R mapper(T data));
-
-  RxListenable<T> get listenable;
-
-  Future<void> dispose();
-}
-
-/// A record of change in [RxValue]
-class Change<T> {
-  /// Value before change
-  final T old;
-
-  /// Value after change
-  final T neu;
-
-  Change(this.neu, this.old);
-
-  String toString() => 'Change(new: $neu, old: $old)';
 }

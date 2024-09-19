@@ -1,3 +1,7 @@
+## 6.0.3
+
++ Introduced `Value` and `ProxyValue`
+
 ## 6.0.2
 
 **Breaking changes:**
