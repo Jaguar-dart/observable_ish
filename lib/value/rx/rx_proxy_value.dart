@@ -11,7 +11,13 @@ class RxProxyValue<T> with RxListenable<T> implements RxValue<T> {
   RxProxyValue(this.getter, {this.setter});
 
   factory RxProxyValue.mapKey(Map map, String key) =>
-      RxProxyValue(() => map[key], setter: (val) => map[key] = val);
+      RxProxyValue(() => map[key], setter: (val) {
+        if (val == null) {
+          map.remove(key);
+        } else {
+          map[key] = val;
+        }
+      });
 
   T get value => getter();
 

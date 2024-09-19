@@ -1,3 +1,7 @@
+## 6.0.5
+
++ `RxProxyValue.mapKey` and `Value.mapKey` fixes
+
 ## 6.0.4
 
 + Analyzer fixes
@@ -9,6 +13,7 @@
 ## 6.0.2
 
 **Breaking changes:**
+
 + `StoredValue` renamed to `RxStoredValue`
 + `ProxyValue` renamed to `RxProxyValue`
 + `RxProxyValue.mapKey` and `RxValue.proxyMapKey`
@@ -26,6 +31,7 @@
 + `Emitter` bug fixes when events are added after dispose.
 
 **Breaking changes:**
+
 + `Emitter.on` method is removed
 
 ## 4.0.7

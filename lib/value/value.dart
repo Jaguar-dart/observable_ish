@@ -34,7 +34,13 @@ class ProxyValue<T> implements Value<T> {
   ProxyValue(this.getter, {this.setter});
 
   factory ProxyValue.mapKey(Map map, String key) =>
-      ProxyValue(() => map[key], setter: (val) => map[key] = val);
+      ProxyValue(() => map[key], setter: (val) {
+        if (val == null) {
+          map.remove(key);
+        } else {
+          map[key] = val;
+        }
+      });
 
   T get value => getter();
 
