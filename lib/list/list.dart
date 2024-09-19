@@ -100,7 +100,7 @@ class RxList<E> extends ListBase<E> implements List<E> {
   }
 }
 
-typedef E ChildrenListComposer<S, E>(S value);
+typedef ChildrenListComposer<S, E> = E Function(S value);
 
 /// An observable list that is bound to another list [binding]
 class BoundList<S, E> extends RxList<E> {
@@ -109,7 +109,9 @@ class BoundList<S, E> extends RxList<E> {
   final ChildrenListComposer<S, E> composer;
 
   BoundList(this.binding, this.composer) {
-    for (S v in binding) super.add(composer(v));
+    for (S v in binding) {
+      super.add(composer(v));
+    }
     binding.onChange.listen((ListChange<S> n) {
       if (n.op == ListOp.add) {
         insert(n.pos!, composer(n.element!));

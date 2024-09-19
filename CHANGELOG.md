@@ -1,3 +1,7 @@
+## 6.0.4
+
++ Analyzer fixes
+
 ## 6.0.3
 
 + Introduced `Value` and `ProxyValue`
