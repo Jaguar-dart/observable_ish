@@ -19,7 +19,7 @@ abstract mixin class RxListenable<T> {
 
   /// Calls [callback] with current value, when the value changes.
   StreamSubscription<T> listen(ValueCallback<T> callback) =>
-      values.listen(callback);
+      values.asBroadcastStream().listen(callback);
 
   /// Maps the changes into a [Stream] of [R]
   Stream<R> map<R>(R mapper(T data)) => values.map(mapper);
