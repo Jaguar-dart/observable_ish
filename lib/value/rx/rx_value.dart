@@ -10,11 +10,13 @@ abstract mixin class RxListenable<T> {
 
   Stream<Change<T>> get onChange;
 
-  Stream<T> get values async* {
-    yield value;
-    await for (final v in onChange) {
-      yield v.neu;
-    }
+  Stream<T> get values {
+    return Stream.multi((controller) {
+      controller.add(value);
+      final subscription = onChange.listen((v) => controller.add(v.neu),
+          onError: controller.addError, onDone: controller.close);
+      controller.onCancel = subscription.cancel;
+    });
   }
 
   /// Calls [callback] with current value, when the value changes.

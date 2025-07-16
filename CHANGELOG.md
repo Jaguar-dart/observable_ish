@@ -1,3 +1,7 @@
+## 6.0.6
+
++ `RxValue.values` `StreamSubscription.cancel` fixes
+
 ## 6.0.5
 
 + `RxProxyValue.mapKey` and `Value.mapKey` fixes
